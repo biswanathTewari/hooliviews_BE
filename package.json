@@ -1,0 +1,26 @@
+{
+  "name": "hooliviews",
+  "version": "1.0.0",
+  "description": "Video stream app",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "nodemon src/app.ts",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Biswanath Tewari",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "express": "^4.18.1",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.23.0",
+    "nodemon": "^2.0.19",
+    "typescript": "^4.8.2"
+  }
+}
