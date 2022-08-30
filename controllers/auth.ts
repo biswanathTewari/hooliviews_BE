@@ -13,6 +13,7 @@ export const signUpUser = async (req: any, res: any) => {
 
     //~ Create a new user
     const newUser = new User(_.pick(req.body, ["email", "password"]));
+    newUser.password = newUser.generateHash();
 
     //~ Save the new user
     await newUser.save();
