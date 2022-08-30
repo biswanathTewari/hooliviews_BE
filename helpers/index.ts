@@ -1,3 +1,1 @@
-import { ResponseWrapper } from "./responseWrapper";
-
-export { ResponseWrapper };
+export * from "./responseWrapper";

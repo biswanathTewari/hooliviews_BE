@@ -55,7 +55,7 @@ userSchema.methods.generateToken = function (): string {
 const User = model<IUser, UserModel>("hooliusers", userSchema);
 
 //& Validation
-const validateUser = (user: typeof User): any => {
+const validateUser = (user: IUser): any => {
   const schema = Joi.object({
     email: Joi.string().email().min(3).max(25).required(),
     password: Joi.string().min(3).max(25).required(),
@@ -63,4 +63,4 @@ const validateUser = (user: typeof User): any => {
   return schema.validate(user);
 };
 
-export { User, validateUser };
+export { User, validateUser, IUser };

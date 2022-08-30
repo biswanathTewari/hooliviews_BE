@@ -1,62 +1,19 @@
-import _ from "lodash";
 import { Request, Response } from "express";
-import { User, validateUser } from "../models";
-import { ResponseWrapper } from "../helpers";
+import { ResponseWrapper, responseObject } from "../helpers";
+import { authService } from "../services";
 
 export const signUpUser = async (req: Request, res: Response) => {
-  try {
-    //~ Validate the request body
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+  const { email, password } = req.body;
 
-    //~ Check if user already exists
-    const user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).send("User already exists.");
-
-    //~ Create a new user
-    const newUser = new User(_.pick(req.body, ["email", "password"]));
-    newUser.password = newUser.generateHash();
-
-    //~ Save the new user
-    await newUser.save();
-
-    //~ Send response
-    const response: ResponseWrapper = new ResponseWrapper(res);
-    const encodedToken = newUser.generateToken();
-    const data = {
-      user: _.pick(newUser, ["_id", "email"]),
-      encodedToken,
-    };
-    return response.created({ success: true, data });
-  } catch (err) {
-    res.status(500).send(err);
-  }
+  const result: responseObject = await authService.signUp({ email, password });
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.created(result);
 };
 
 export const logInUser = async (req: Request, res: Response) => {
-  try {
-    //~ Validate the request body
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+  const { email, password } = req.body;
 
-    //~ Check if user exists
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).send("Invalid email or password.");
-
-    //~ Check if password is correct
-    const validPassword = user.validatePassword(req.body.password);
-    if (!validPassword)
-      return res.status(400).send("Invalid email or password.");
-
-    //~ Send response
-    const response: ResponseWrapper = new ResponseWrapper(res);
-    const encodedToken = user.generateToken();
-    const data = {
-      user: _.pick(user, ["_id", "email"]),
-      encodedToken,
-    };
-    return response.ok({ success: true, data });
-  } catch (err) {
-    res.status(500).send(err);
-  }
+  const result: responseObject = await authService.login({ email, password });
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
 };

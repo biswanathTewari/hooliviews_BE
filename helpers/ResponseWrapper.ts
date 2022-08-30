@@ -1,9 +1,9 @@
 import { Response } from "express";
 
-interface responseObject {
+export interface responseObject {
   success: boolean;
   data: object;
-  status?: number;
+  status?: number; // optional: for error with custom failure code
 }
 
 export class ResponseWrapper {
@@ -21,6 +21,7 @@ export class ResponseWrapper {
     if (response.success) {
       return this.res.status(success_code).send(response);
     }
+    // custom error, with status code
     if (response.status) {
       fail_code = response.status;
     }
