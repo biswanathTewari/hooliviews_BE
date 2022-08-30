@@ -17,7 +17,14 @@ export const signUpUser = async (req: any, res: any) => {
 
     //~ Save the new user
     await newUser.save();
-    return res.status(201).send(_.pick(newUser, ["_id", "email"]));
+
+    //~ Send response
+    const encodedToken = newUser.generateToken();
+    const data = {
+      user: _.pick(newUser, ["_id", "email"]),
+      encodedToken,
+    };
+    return res.status(201).send({ data });
   } catch (err) {
     res.status(500).send(err);
   }

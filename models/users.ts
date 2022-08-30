@@ -1,5 +1,6 @@
 import { Schema, Model, model } from "mongoose";
 import Joi from "joi";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 //& interfaces
@@ -11,6 +12,7 @@ interface IUser {
 interface IUserMethods {
   generateHash: () => string;
   validatePassword: (password: string) => boolean;
+  generateToken: () => string;
 }
 
 type UserModel = Model<IUser, {}, IUserMethods>;
@@ -38,6 +40,15 @@ userSchema.methods.generateHash = function (): string {
 
 userSchema.methods.validatePassword = function (password: string): boolean {
   return bcrypt.compareSync(password, this.password); // req.body.password, hashed password
+};
+
+//& token
+userSchema.methods.generateToken = function (): string {
+  return jwt.sign(
+    { _id: this._id, email: this.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 };
 
 //& Model
