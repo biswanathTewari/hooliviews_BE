@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { Request, Response } from "express";
 import { User, validateUser } from "../models";
+import { ResponseWrapper } from "../helpers";
 
 export const signUpUser = async (req: Request, res: Response) => {
   try {
@@ -20,12 +21,13 @@ export const signUpUser = async (req: Request, res: Response) => {
     await newUser.save();
 
     //~ Send response
+    const response: ResponseWrapper = new ResponseWrapper(res);
     const encodedToken = newUser.generateToken();
     const data = {
       user: _.pick(newUser, ["_id", "email"]),
       encodedToken,
     };
-    return res.status(201).send({ data });
+    return response.created({ success: true, data });
   } catch (err) {
     res.status(500).send(err);
   }
@@ -47,12 +49,13 @@ export const logInUser = async (req: Request, res: Response) => {
       return res.status(400).send("Invalid email or password.");
 
     //~ Send response
+    const response: ResponseWrapper = new ResponseWrapper(res);
     const encodedToken = user.generateToken();
     const data = {
       user: _.pick(user, ["_id", "email"]),
       encodedToken,
     };
-    return res.status(200).send({ data });
+    return response.ok({ success: true, data });
   } catch (err) {
     res.status(500).send(err);
   }
