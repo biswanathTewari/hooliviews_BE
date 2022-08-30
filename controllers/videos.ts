@@ -1,6 +1,7 @@
+import { Request, Response } from "express";
 import { Video } from "../models";
 
-export const getAllVideos = async (_, res: any) => {
+export const getAllVideos = async (_, res: Response) => {
   try {
     const videos = await Video.find();
     return res.status(200).send(videos);
@@ -9,7 +10,7 @@ export const getAllVideos = async (_, res: any) => {
   }
 };
 
-export const getVideoById = async (req: any, res: any) => {
+export const getVideoById = async (req: Request, res: Response) => {
   try {
     const video = await Video.findById(req.params.id);
     if (!video) return res.status(404).send("Video not found");

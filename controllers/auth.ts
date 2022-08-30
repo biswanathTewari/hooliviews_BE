@@ -1,7 +1,8 @@
 import _ from "lodash";
+import { Request, Response } from "express";
 import { User, validateUser } from "../models";
 
-export const signUpUser = async (req: any, res: any) => {
+export const signUpUser = async (req: Request, res: Response) => {
   try {
     //~ Validate the request body
     const { error } = validateUser(req.body);
@@ -30,7 +31,7 @@ export const signUpUser = async (req: any, res: any) => {
   }
 };
 
-export const logInUser = async (req: any, res: any) => {
+export const logInUser = async (req: Request, res: Response) => {
   try {
     //~ Validate the request body
     const { error } = validateUser(req.body);
