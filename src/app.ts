@@ -1,9 +1,23 @@
 import express from "express";
-const app = express();
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import { videos } from "../routes";
 
-app.get("/", (req, res) => {
-  res.send("Hello World! Hi there bizan!");
+const app = express();
+app.use(express.json());
+dotenv.config();
+
+//^ db connection
+mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/hooliviews")
+  .then(() => console.log("Connected to MongoDB..."))
+  .catch((err) => console.log("Could not connect to MongoDB...", err));
+
+//^ routes
+app.get("/", (_, res: any) => {
+  res.send("Welcome to HooliViews Server!");
 });
+app.use("/videos", videos);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
