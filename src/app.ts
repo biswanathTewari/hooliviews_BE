@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { videos } from "../routes";
+import { videos, auth } from "../routes";
 
 const app = express();
 app.use(express.json());
@@ -17,7 +17,8 @@ mongoose
 app.get("/", (_, res: any) => {
   res.send("Welcome to HooliViews Server!");
 });
-app.use("/videos", videos);
+app.use("/api/videos", videos);
+app.use("/api/auth", auth);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
