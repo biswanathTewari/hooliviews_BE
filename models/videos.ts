@@ -1,8 +1,22 @@
-import mongoose from "mongoose";
+import { Schema, Model, model } from "mongoose";
 import Joi from "joi";
 
+//& interfaces
+interface IVideo {
+  title: string;
+  description: string;
+  img: string;
+  creator: string;
+  creatorImg: string;
+  duration: string;
+}
+
+interface IVideoMethods {}
+
+type VideoModel = Model<IVideo, {}, IVideoMethods>;
+
 //& Schema
-const videoSchema = new mongoose.Schema({
+const videoSchema = new Schema<IVideo, VideoModel, IVideoMethods>({
   title: { type: String, required: true },
   description: { type: String, required: true },
   img: { type: String, required: true },
@@ -12,7 +26,7 @@ const videoSchema = new mongoose.Schema({
 });
 
 //& Model
-const Video = mongoose.model("videos", videoSchema);
+const Video = model<IVideo, VideoModel>("videos", videoSchema);
 
 //& Validation
 const validateVideo = (video) => {
