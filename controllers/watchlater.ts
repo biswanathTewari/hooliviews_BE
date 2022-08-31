@@ -9,3 +9,12 @@ export const getLaterVideos = async (req: Request, res: Response) => {
   const response: ResponseWrapper = new ResponseWrapper(res);
   return response.ok(result);
 };
+
+export const addToLater = async (req: Request, res: Response) => {
+  const result: responseObject = await watchlaterService.addToLater(
+    req.params.videoId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.created(result);
+};
