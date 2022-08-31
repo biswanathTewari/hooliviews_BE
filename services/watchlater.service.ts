@@ -69,4 +69,33 @@ const addToLater = async (
   }
 };
 
-export default { getLaterVideos, addToLater };
+const removeLater = async (videoId: string, userId: string) => {
+  try {
+    //~ Validate the request body
+    const { error } = validateWatchLater({ video: videoId });
+    if (error) throw { status: 400, message: error.details[0].message };
+
+    if (!isValidObjectId(videoId))
+      throw { status: 400, message: "Invalid video id" };
+
+    //~ Check if video exists
+    const video: IVideo = await Video.findById(videoId);
+    if (!video) throw { message: "Video not found", status: 404 };
+
+    //~ Remove the video from watchlater
+    await WatchLater.deleteOne({
+      video: new Types.ObjectId(videoId),
+      user: new Types.ObjectId(userId),
+    });
+
+    return await getLaterVideos(userId); //~ return the updated list of watchlater videos
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
+export default { getLaterVideos, addToLater, removeLater };
