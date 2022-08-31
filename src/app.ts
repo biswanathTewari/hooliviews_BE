@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { videos, auth } from "../routes";
+import { videos, auth, likes } from "../routes";
 
 const app = express();
 app.use(express.json());
@@ -19,6 +19,7 @@ app.get("/", (_, res: any) => {
 });
 app.use("/api/videos", videos);
 app.use("/api/auth", auth);
+app.use("/api/likes", likes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
