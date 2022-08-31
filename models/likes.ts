@@ -13,8 +13,8 @@ type LikesModel = Model<ILikes, {}, ILikesMethods>;
 
 //& Schema
 const likesSchema = new Schema<ILikes, LikesModel, ILikesMethods>({
-  video: { type: Schema.Types.ObjectId, ref: "Video", required: true },
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  video: { type: Schema.Types.ObjectId, ref: "videos", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "hooliusers", required: true },
 });
 
 //& Model
@@ -28,4 +28,4 @@ const validateLikes = (like) => {
   return schema.validate(like);
 };
 
-export { Likes, validateLikes };
+export { Likes, validateLikes, ILikes };

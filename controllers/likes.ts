@@ -10,3 +10,11 @@ export const likeVideoById = async (req: Request, res: Response) => {
   const response: ResponseWrapper = new ResponseWrapper(res);
   return response.created(result);
 };
+
+export const getAllLikedVideos = async (req: Request, res: Response) => {
+  const result: responseObject = await likesService.getAllLikedVideos(
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};

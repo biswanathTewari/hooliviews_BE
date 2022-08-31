@@ -1,5 +1,5 @@
-import { isValidObjectId, Types } from "mongoose";
-import { Likes, Video, validateLikes } from "../models";
+import { isValidObjectId, Schema, Types } from "mongoose";
+import { Likes, Video, validateLikes, ILikes, IVideo } from "../models";
 import { responseObject } from "../helpers";
 
 const likeVideoById = async (
@@ -15,11 +15,11 @@ const likeVideoById = async (
       throw { status: 400, message: "Invalid video id" };
 
     //~ Check if video exists
-    const video = await Video.findById(videoId);
+    const video: IVideo = await Video.findById(videoId);
     if (!video) throw { message: "Video not found", status: 404 };
 
     //~ Check if the user has already liked the video
-    const like = await Likes.findOne({
+    const like: ILikes = await Likes.findOne({
       video: new Types.ObjectId(videoId),
       user: new Types.ObjectId(userId),
     });
@@ -41,4 +41,25 @@ const likeVideoById = async (
   }
 };
 
-export default { likeVideoById };
+const getAllLikedVideos = async (userId: string): Promise<responseObject> => {
+  try {
+    const likeArray: Array<ILikes> = await Likes.find({
+      user: new Types.ObjectId(userId),
+    })
+      .populate("video")
+      .select("-user -_id");
+
+    const likes: Array<Schema.Types.ObjectId> = likeArray.map(
+      (like) => like.video
+    );
+    return { success: true, data: { likes } };
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
+export default { likeVideoById, getAllLikedVideos };
