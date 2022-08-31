@@ -18,3 +18,12 @@ export const addHistory = async (req: Request, res: Response) => {
   const response: ResponseWrapper = new ResponseWrapper(res);
   return response.created(result);
 };
+
+export const removeFromHistory = async (req: Request, res: Response) => {
+  const result: responseObject = await historyService.removeHistory(
+    req.params.videoId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};

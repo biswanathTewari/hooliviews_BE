@@ -62,4 +62,33 @@ const addHistory = async (
   }
 };
 
-export default { getAllVideos, addHistory };
+const removeHistory = async (videoId: string, userId: string) => {
+  try {
+    //~ Validate the request body
+    const { error } = validateHistory({ video: videoId });
+    if (error) throw { status: 400, message: error.details[0].message };
+
+    if (!isValidObjectId(videoId))
+      throw { status: 400, message: "Invalid video id" };
+
+    //~ Check if video exists
+    const video: IVideo = await Video.findById(videoId);
+    if (!video) throw { message: "Video not found", status: 404 };
+
+    //~ Remove the liked video
+    await History.deleteOne({
+      video: new Types.ObjectId(videoId),
+      user: new Types.ObjectId(userId),
+    });
+
+    return await getAllVideos(userId); //~ return the updated list of liked videos
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
+export default { getAllVideos, addHistory, removeHistory };
