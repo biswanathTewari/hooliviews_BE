@@ -41,4 +41,4 @@ const validateVideo = (video) => {
   return schema.validate(video);
 };
 
-export { Video, validateVideo };
+export { Video, validateVideo, IVideo };
