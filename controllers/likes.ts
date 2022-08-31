@@ -18,3 +18,12 @@ export const getAllLikedVideos = async (req: Request, res: Response) => {
   const response: ResponseWrapper = new ResponseWrapper(res);
   return response.ok(result);
 };
+
+export const removeLike = async (req: Request, res: Response) => {
+  const result: responseObject = await likesService.removeLike(
+    req.params.videoId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};
