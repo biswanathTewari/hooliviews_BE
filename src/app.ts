@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { videos, auth, likes, watchlater } from "../routes";
+import { videos, auth, likes, watchlater, history } from "../routes";
 
 const app = express();
 app.use(express.json());
@@ -21,6 +21,7 @@ app.use("/api/videos", videos);
 app.use("/api/auth", auth);
 app.use("/api/user/likes", likes);
 app.use("/api/user/watchlater", watchlater);
+app.use("/api/user/history", history);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
