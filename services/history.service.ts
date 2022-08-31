@@ -91,4 +91,17 @@ const removeHistory = async (videoId: string, userId: string) => {
   }
 };
 
-export default { getAllVideos, addHistory, removeHistory };
+const clearHistory = async (userId: string) => {
+  try {
+    await History.deleteMany({ user: new Types.ObjectId(userId) });
+    return await getAllVideos(userId);
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
+export default { getAllVideos, addHistory, removeHistory, clearHistory };

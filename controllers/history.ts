@@ -27,3 +27,11 @@ export const removeFromHistory = async (req: Request, res: Response) => {
   const response: ResponseWrapper = new ResponseWrapper(res);
   return response.ok(result);
 };
+
+export const clearHistory = async (req: Request, res: Response) => {
+  const result: responseObject = await historyService.clearHistory(
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};
