@@ -1,3 +1,4 @@
 import videos from "./videos";
+import auth from "./auth";
 
-export { videos };
+export { videos, auth };
