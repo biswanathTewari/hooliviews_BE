@@ -22,4 +22,13 @@ const createPlaylist = async (req: Request, res: Response) => {
   return response.created(result);
 };
 
-export { createPlaylist, getPlaylists };
+const deletePlaylist = async (req: Request, res: Response) => {
+  const result: responseObject = await playlistService.deletePlaylist(
+    req.params.playlistId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};
+
+export { createPlaylist, getPlaylists, deletePlaylist };

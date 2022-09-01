@@ -1,5 +1,5 @@
-import { isValidObjectId, Schema, Types } from "mongoose";
-import { validatePlaylist, Playlist } from "../models";
+import { isValidObjectId, Types } from "mongoose";
+import { validatePlaylist, Playlist, IPlaylist, IVideo } from "../models";
 import { responseObject } from "../helpers";
 
 const getPlaylists = async (userId: string): Promise<responseObject> => {
@@ -9,7 +9,9 @@ const getPlaylists = async (userId: string): Promise<responseObject> => {
       throw { status: 400, message: "Something went wrong" };
 
     //~ Get all the playlists of the user
-    const playlists = await Playlist.find({ user: new Types.ObjectId(userId) })
+    const playlists: Array<IPlaylist> = await Playlist.find({
+      user: new Types.ObjectId(userId),
+    })
       .populate("videos.video")
       .select("-user");
     return { success: true, data: { playlists } };
@@ -33,7 +35,7 @@ const createPlaylist = async (
     if (error) throw { status: 400, message: error.details[0].message };
 
     //~ check if a playlist already exists with a given title
-    const playlist = await Playlist.findOne({
+    const playlist: Array<IPlaylist> = await Playlist.findOne({
       title,
       user: new Types.ObjectId(userId),
     });
@@ -61,7 +63,32 @@ const createPlaylist = async (
   }
 };
 
+const deletePlaylist = async (
+  playlistId: string,
+  userId: string
+): Promise<responseObject> => {
+  try {
+    //~ Check if the playlist exists
+    const playlist: Array<IPlaylist> = await Playlist.findOne({
+      _id: new Types.ObjectId(playlistId),
+      user: new Types.ObjectId(userId),
+    });
+    if (!playlist) throw { status: 404, message: "Playlist not found" };
+
+    //~ Delete the playlist
+    await Playlist.findByIdAndDelete(playlistId);
+    return await getPlaylists(userId);
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
 export default {
   createPlaylist,
   getPlaylists,
+  deletePlaylist,
 };
