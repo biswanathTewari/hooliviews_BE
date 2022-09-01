@@ -31,6 +31,15 @@ const deletePlaylist = async (req: Request, res: Response) => {
   return response.ok(result);
 };
 
+const getPlaylist = async (req: Request, res: Response) => {
+  const result: responseObject = await playlistService.getPlaylist(
+    req.params.playlistId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};
+
 const addVideoToPlaylist = async (req: Request, res: Response) => {
   const result: responseObject = await playlistService.addVideoToPlaylist(
     req.params.playlistId,
@@ -41,4 +50,10 @@ const addVideoToPlaylist = async (req: Request, res: Response) => {
   return response.created(result);
 };
 
-export { createPlaylist, getPlaylists, deletePlaylist, addVideoToPlaylist };
+export {
+  createPlaylist,
+  getPlaylists,
+  deletePlaylist,
+  addVideoToPlaylist,
+  getPlaylist,
+};
