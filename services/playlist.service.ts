@@ -1,5 +1,12 @@
-import { isValidObjectId, Types } from "mongoose";
-import { validatePlaylist, Playlist, IPlaylist, IVideo } from "../models";
+import { isValidObjectId, Schema, Types } from "mongoose";
+import {
+  validatePlaylist,
+  Playlist,
+  IPlaylist,
+  IPlaylistItem,
+  IVideo,
+  Video,
+} from "../models";
 import { responseObject } from "../helpers";
 
 const getPlaylists = async (userId: string): Promise<responseObject> => {
@@ -87,8 +94,54 @@ const deletePlaylist = async (
   }
 };
 
+const addVideoToPlaylist = async (
+  playlistId: string,
+  videoId: string,
+  userId: string
+) => {
+  try {
+    //~ Check for valid ids
+    if (!isValidObjectId(playlistId) || !isValidObjectId(videoId))
+      throw { status: 400, message: "Something went wrong" };
+
+    //~ Check if the playlist exists
+    const playlist = await Playlist.findOne({
+      _id: new Types.ObjectId(playlistId),
+      user: new Types.ObjectId(userId),
+    });
+    if (!playlist) throw { status: 404, message: "Playlist not found" };
+
+    //~ Check if the video exists
+    const videoExists: IVideo = await Video.findOne({
+      _id: new Types.ObjectId(videoId),
+      user: new Types.ObjectId(userId),
+    });
+    if (!videoExists) throw { status: 404, message: "Video not found" };
+
+    //~ Check if the video exists in the playlist
+    const video: IPlaylistItem = playlist.videos.find(
+      (video) => video.video === new Schema.Types.ObjectId(videoId)
+    );
+    if (video)
+      throw { status: 400, message: "Video already exists in the playlist" };
+
+    //~ Add the video to the playlist
+    // @ts-ignore
+    playlist.videos.push({ video: new Types.ObjectId(videoId) });
+    await playlist.save();
+    return await getPlaylists(userId);
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
 export default {
   createPlaylist,
   getPlaylists,
   deletePlaylist,
+  addVideoToPlaylist,
 };

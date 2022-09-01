@@ -49,4 +49,4 @@ const validatePlaylist = (playlist) => {
   return schema.validate(playlist);
 };
 
-export { Playlist, validatePlaylist, IPlaylist };
+export { Playlist, validatePlaylist, IPlaylist, IPlaylistItem };
