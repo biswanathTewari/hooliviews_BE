@@ -2,6 +2,26 @@ import { isValidObjectId, Schema, Types } from "mongoose";
 import { validatePlaylist, Playlist } from "../models";
 import { responseObject } from "../helpers";
 
+const getPlaylists = async (userId: string): Promise<responseObject> => {
+  try {
+    //~ Check if the user exists
+    if (!isValidObjectId(userId))
+      throw { status: 400, message: "Something went wrong" };
+
+    //~ Get all the playlists of the user
+    const playlists = await Playlist.find({ user: new Types.ObjectId(userId) })
+      .populate("videos.video")
+      .select("-user");
+    return { success: true, data: { playlists } };
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
 const createPlaylist = async (
   title: string,
   description: string,
@@ -31,10 +51,7 @@ const createPlaylist = async (
       playlists: [],
     });
     await newPlaylist.save();
-    return {
-      success: true,
-      data: { playlist: newPlaylist.playlists, _id: newPlaylist._id },
-    };
+    return await getPlaylists(userId);
   } catch (err) {
     return {
       success: false,
@@ -46,4 +63,5 @@ const createPlaylist = async (
 
 export default {
   createPlaylist,
+  getPlaylists,
 };

@@ -11,7 +11,7 @@ interface IPlaylistItemMethods {}
 type PlaylistItemModel = Model<IPlaylistItem, {}, IPlaylistItemMethods>;
 
 interface IPlaylist {
-  playlists: Array<IPlaylistItem>;
+  videos: Array<IPlaylistItem>;
   user: Schema.Types.ObjectId;
   title: string;
   description?: string;
@@ -31,7 +31,7 @@ const playlistItem = new Schema<
 });
 
 const playlistSchema = new Schema<IPlaylist, PlaylistModel, IPlaylistMethods>({
-  playlists: [playlistItem],
+  videos: [playlistItem],
   title: { type: String, required: true },
   description: { type: String },
   user: { type: Schema.Types.ObjectId, ref: "hooliusers", required: true },
