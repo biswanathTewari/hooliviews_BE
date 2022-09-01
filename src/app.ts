@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { videos, auth, likes, watchlater, history, playlist } from "../routes";
+import { videos, auth, likes, watchlater, history, playlist } from "./routes";
 
 const app = express();
 app.use(express.json());
