@@ -50,10 +50,21 @@ const addVideoToPlaylist = async (req: Request, res: Response) => {
   return response.created(result);
 };
 
+const deleteVideoFromPlaylist = async (req: Request, res: Response) => {
+  const result: responseObject = await playlistService.deleteVideoFromPlaylist(
+    req.params.playlistId,
+    req.params.videoId,
+    req.user._id
+  );
+  const response: ResponseWrapper = new ResponseWrapper(res);
+  return response.ok(result);
+};
+
 export {
   createPlaylist,
   getPlaylists,
   deletePlaylist,
   addVideoToPlaylist,
   getPlaylist,
+  deleteVideoFromPlaylist,
 };

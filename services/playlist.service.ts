@@ -16,12 +16,26 @@ const getPlaylists = async (userId: string): Promise<responseObject> => {
       throw { status: 400, message: "Something went wrong" };
 
     //~ Get all the playlists of the user
-    const playlists: Array<IPlaylist> = await Playlist.find({
+    let playlists: Array<IPlaylist> = await Playlist.find({
       user: new Types.ObjectId(userId),
     })
       .populate("videos.video")
       .select("-user");
-    return { success: true, data: { playlists } };
+
+    // @ts-ignore
+    const newPlaylists = playlists.map((playlist) => {
+      // @ts-ignore, replacing videos: [{video,_id}] with videos: [video]
+      let videos: Array<IVideo> = playlist.videos.map((obj) => obj.video);
+      const myPlaylist = {
+        // @ts-ignore, _id comes after saving, from monogose
+        _id: playlist._id,
+        title: playlist.title,
+        description: playlist.description,
+        videos: videos,
+      };
+      return myPlaylist;
+    });
+    return { success: true, data: { playlists: newPlaylists } };
   } catch (err) {
     return {
       success: false,
@@ -157,7 +171,7 @@ const addVideoToPlaylist = async (
 
     //~ Check if the video exists in the playlist
     const video: IPlaylistItem = playlist.videos.find(
-      (video) => video.video === new Schema.Types.ObjectId(videoId)
+      (video) => video.video.toString() === videoId
     );
     if (video)
       throw { status: 400, message: "Video already exists in the playlist" };
@@ -176,10 +190,58 @@ const addVideoToPlaylist = async (
   }
 };
 
+const deleteVideoFromPlaylist = async (
+  playlistId: string,
+  videoId: string,
+  userId: string
+): Promise<responseObject> => {
+  try {
+    //~ Check for valid ids
+    if (!isValidObjectId(playlistId) || !isValidObjectId(videoId))
+      throw { status: 400, message: "Something went wrong" };
+
+    //~ Check if the playlist exists
+    const playlist = await Playlist.findOne({
+      _id: new Types.ObjectId(playlistId),
+      user: new Types.ObjectId(userId),
+    });
+    if (!playlist) throw { status: 404, message: "Playlist not found" };
+
+    //~ Check if the video exists
+    const videoExists: IVideo = await Video.findOne({
+      _id: new Types.ObjectId(videoId),
+      user: new Types.ObjectId(userId),
+    });
+    if (!videoExists) throw { status: 404, message: "Video not found" };
+
+    //~ Check if the video exists in the playlist
+    const video: IPlaylistItem = playlist.videos.find(
+      (video) => video.video.toString() == videoId
+    );
+    if (!video)
+      throw { status: 400, message: "Video not present in the playlist" };
+
+    //~ Delete the video from the playlist
+    playlist.videos = playlist.videos.filter(
+      (video) => video.video.toString() !== videoId
+    );
+    await playlist.save();
+
+    return await getPlaylist(playlistId, userId);
+  } catch (err) {
+    return {
+      success: false,
+      data: { message: err.message },
+      status: err.status,
+    };
+  }
+};
+
 export default {
   createPlaylist,
   getPlaylists,
   deletePlaylist,
   addVideoToPlaylist,
   getPlaylist,
+  deleteVideoFromPlaylist,
 };
