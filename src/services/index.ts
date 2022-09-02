@@ -3,6 +3,7 @@ import videosService from "./videos.service";
 import likesService from "./likes.service";
 import watchlaterService from "./watchlater.service";
 import historyService from "./history.service";
+import playlistService from "./playlist.service";
 
 export {
   authService,
@@ -10,4 +11,5 @@ export {
   likesService,
   watchlaterService,
   historyService,
+  playlistService,
 };
